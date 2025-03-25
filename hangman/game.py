@@ -6,7 +6,7 @@ GameState = Enum('GameState', [('WON', 1), ('LOST', 2), ('CONTINUE', 3)])
 def get_random_word():
     return list('keyboard')
 
-def get_game_state(word, guesses, max_guesses):
+def get_game_state(word, guesses, max_bad_choices):
     valid_letters = []
     invalid_letters = []
     for guess in guesses:
@@ -18,7 +18,7 @@ def get_game_state(word, guesses, max_guesses):
     if len(valid_letters) == len(set(word)):
         return GameState.WON
 
-    if len(invalid_letters) == max_guesses:
+    if len(invalid_letters) == max_bad_choices:
         return GameState.LOST
 
     return GameState.CONTINUE
@@ -65,28 +65,28 @@ def prompt_for_guess(prompt, guesses):
 
         return guess
 
-def render_turn(word, guesses, max_guesses):
+def render_turn(word, guesses, max_bad_choices):
     display_word = get_display_word(word, guesses)
     display_dashes = get_display_dashes(word, guesses)
     bad_choices = get_bad_choices(word, guesses)
     print(f"What is the word {display_word}?")
     print(f"                 {display_dashes}")
     if len(bad_choices) > 0:
-        print(f"Incorrect choices \"{''.join(bad_choices)}\". You have {max_guesses - len(bad_choices)} remaining.")
+        print(f"Incorrect choices \"{''.join(bad_choices)}\". You have {max_bad_choices - len(bad_choices)} remaining.")
 
-MAX_GUESSES = 6
+MAX_BAD_CHOICES = 6
 guesses = []
 word = get_random_word()
 
 print('Welcome to the game of Hang Man')
 print('')
 
-while get_game_state(word, guesses, MAX_GUESSES) == GameState.CONTINUE:
-    render_turn(word, guesses, MAX_GUESSES)
+while get_game_state(word, guesses, MAX_BAD_CHOICES) == GameState.CONTINUE:
+    render_turn(word, guesses, MAX_BAD_CHOICES)
     guess = prompt_for_guess('choose a letter a-z: ', guesses)
     guesses.append(guess)
 
-if get_game_state(word, guesses, MAX_GUESSES) == GameState.WON:
+if get_game_state(word, guesses, MAX_BAD_CHOICES) == GameState.WON:
     print(f"Congratulations, you guessed the word {''.join(word)}")
 else:
     print(f"Sorry, try again, the word was {''.join(word)}")
